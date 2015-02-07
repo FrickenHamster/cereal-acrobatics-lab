@@ -13,11 +13,20 @@ class Station
 public:
 	Station(int, int);
 	virtual ~Station();
+	
 
+	bool isMarked() const
+	{
+		return marked;
+	}
+
+	void setMarked(bool marked)
+	{
+		Station::marked = marked;
+	}
 
 private:
-	int x;
-	int y;
+	bool marked;
 };
 
 #endif /* STATION_H_ */

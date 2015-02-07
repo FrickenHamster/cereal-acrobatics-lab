@@ -5,16 +5,27 @@
 using namespace std;
 
 
-void procedureTree(Station **stations, int size)
-{
-	bool mark[size];
-	for (int i = 0; i < size; ++i)
-	{
-		mark[i] = false;
-	}
-	
-}
 
+void ACSF(int* xlist, int* ylist, int num, Station * start)
+{
+	long long int * rates = new long long int[num];
+	//unmark stations
+
+	bool * mark = new bool[num];
+	
+	for (int i = 0; i < num; ++i)
+	{
+		
+	}
+	for (int i = 2; i < num; ++i)
+	{
+
+		for (int j = 0; j < num; ++j)
+		{
+			
+		}
+	}
+}
 
 
 int main(int argc, char **argv)
