@@ -1,12 +1,13 @@
 #include <iostream>
 #include <fstream>
+#include <math.h>
 #include "Station.h"
 
 using namespace std;
 
 
 
-void ACSF(int* xlist, int* ylist, int num, Station * start)
+void ACSF(int* xlist, int* ylist, int num, int start)
 {
 	long long int * rates = new long long int[num];
 	//unmark stations
@@ -15,11 +16,26 @@ void ACSF(int* xlist, int* ylist, int num, Station * start)
 	
 	for (int i = 0; i < num; ++i)
 	{
-		
+		mark[i] = false;
 	}
+	mark[start] = true;
 	for (int i = 2; i < num; ++i)
 	{
-
+		long long int lowd = -1;
+		int lowid = -1;
+		for (int j = 0; j < num; ++j)
+		{
+			if (j == start || mark[j])
+				continue;
+			long long int dd = pow(xlist[start] - xlist[j], 2) + pow(ylist[start] - ylist[j], 2);
+			if (lowd == -1 || dd < lowd)
+			{
+				lowid = j;
+				lowd = dd;
+			}
+		}
+		
+		rates[lowid] = 0;
 		for (int j = 0; j < num; ++j)
 		{
 			
