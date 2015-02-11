@@ -131,6 +131,56 @@ void ACSF(Station ** stations, int num, int source)
 }
 
 
+void ACSet(Station ** stations, int num, int source)
+{
+	bool * mark = new bool[num];
+	long long int ** rates = new long long int[num];
+	Station ** markedStations = new Station*[num];
+	
+	
+	for (int i = 0; i < num; ++i)
+	{
+		mark[i] = false;
+		rates[i] = 0;
+	}
+	
+	mark[source] = true;
+
+	for (int i = 1; i < num; ++i)
+	{
+		int lowd = -1;
+		int lowj = -1;
+		int lowe = -1;
+		
+		for (int j = 0; j < num; ++j)
+		{
+			if (mark[j])
+				continue;
+			for (int k = 0; k < num; ++k)
+			{
+				if (!mark[k])
+					continue;
+				long long int dd = pow(stations[j]->getX() - stations[k]->getX(), 2) + pow(stations[j]->getY() - stations[k]->getY(), 2);
+				if (lowd == -1 || dd < lowd)
+				{
+					lowj = j;
+					lowe = k;
+					lowd = dd;
+				}
+			}
+			
+			//mark lowj
+			mark[j] = true;
+			rates[j] = 0;
+			
+			
+			
+			
+		}
+	}
+}
+
+
 int main(int argc, char **argv)
 {
 	int method, stationNum, sourceStation;
