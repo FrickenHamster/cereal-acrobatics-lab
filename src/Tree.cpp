@@ -100,7 +100,7 @@ Tree::Tree(long long int * rate, Station ** stations, int stationNum, int source
 		
 	}
 	//cout << "suki" << root->val;
-	root->print();
+	//root->print();
 
 	lowPower = 0;
 	for (int i = 0; i < stationNum; ++i)
