@@ -30,7 +30,7 @@ void ACSF(Station **stations, int num, int source)
 	markedIndex[markedNum] = source;
 	markedNum++;
 
-	for (int i = 2; i < num; ++i)
+	for (int i = 1; i < num; ++i)
 	{
 		long long int lowd = -1;
 		int lowid = -1;
@@ -144,11 +144,11 @@ void ACSet(Station **stations, int num, int source)
 	Station **markedStations = new Station *[num];
 	int markedNum = 0;
 	int *markedIndex = new int[num];
-
+	
+	int totalPower;
 
 	for (int i = 0; i < num; ++i)
 	{
-		
 		mark[i] = false;
 		rates[i] = 0;
 	}
@@ -185,6 +185,8 @@ void ACSet(Station **stations, int num, int source)
 				}
 			}
 		}
+		
+		cout << "picked station" << lowj << "\n";
 		//mark lowj
 		mark[lowj] = true;
 		rates[lowj] = 0;
@@ -200,17 +202,20 @@ void ACSet(Station **stations, int num, int source)
 			int lind = markedIndex[l];
 			if (lind == lowj)
 				continue;
-			for (int k; k < markedNum; ++k)
+			cout << "going lind:" << lind << "\n";
+			for (int k = 0; k < markedNum; ++k)
 			{
+				cout << "q[" << k << "] is" << rates[markedIndex[k]] <<"\n";
 				q[k] = rates[markedIndex[k]];
 			}
 			
 			long long int dd = pow(stations[lind]->getX() - stations[lowj]->getX(), 2) + pow(stations[lind]->getY() - stations[lowj]->getY(), 2);
 			q[l] = max(q[l], dd);
+			cout << "jess" << "\n";
 			Tree *tt = new Tree(q, markedStations, markedNum, 0);
 			p[lind] = tt->getLowestPower();
 			cout << "set p" << l << "to " << tt->getLowestPower() << "\n";
-			for (int j = 0; j < markedNum; ++j)
+			for (int j = 0; j < num; ++j)
 			{
 				cout << "p" << j << ":" << p[j] << "\n";
 			}
@@ -219,26 +224,33 @@ void ACSet(Station **stations, int num, int source)
 				lowp = p[lind];
 		}
 
+		cout << "lowp" << lowp << "\n";
+		
 		int lowl = -1;
 		for (int l = 0; l < markedNum; ++l)
 		{
-			/*if (l == lowj)
-				continue;*/
-			if (lowl == -1 || p[l] < p[lowl])
+			//if (l == lowj)
+			//	continue;
+			cout << "searching " << p[markedIndex[l]] << "\n";
+			if (p[markedIndex[l]] == lowp)
 			{
 				lowl = l;
+				break;
 			}
 		}
+
+		cout << "lowl" << lowl << "\n";
 		
 		int lind = markedIndex[lowl];
 		cout << "low l " << lind <<"\n";
 		
 		long long int dd = pow(stations[lind]->getX() - stations[lowj]->getX(), 2) + pow(stations[lind]->getY() - stations[lind]->getY(), 2);
 		rates[lind] = max(rates[lind], dd);
-		for (int k = 0; k < markedNum; ++k)
+		for (int m = 0; m < num; ++m)
 		{
-			q[k] = rates[markedIndex[k]];
+			cout << "rate is:" << rates[m] << "\n";
 		}
+		
 		Tree *tt = new Tree(q, markedStations, markedNum, 0);
 
 		for (int l = 0; l < markedNum; ++l)
@@ -247,9 +259,10 @@ void ACSet(Station **stations, int num, int source)
 			cout << "setting " << ind << " to " << tt->getLowTransSchedule()[l] << "\n";
 			rates[ind] = tt->getLowTransSchedule()[l];
 		}
-
 		
+		totalPower = tt->getLowestPower();
 	}
+	cout << totalPower << "\n";
 	for (int i = 0; i < num; ++i)
 	{
 		cout << i << "," << rates[i] << "\n";
