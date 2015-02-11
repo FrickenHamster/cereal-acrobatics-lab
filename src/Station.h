@@ -15,18 +15,18 @@ public:
 	virtual ~Station();
 	
 
-	bool isMarked() const
+	int getX()
 	{
-		return marked;
+		return x;
 	}
 
-	void setMarked(bool marked)
+	int getY()
 	{
-		Station::marked = marked;
+		return y;
 	}
-
 private:
-	bool marked;
+	int x;
+	int y;
 };
 
 #endif /* STATION_H_ */
