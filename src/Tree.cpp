@@ -7,6 +7,7 @@
 TNode::TNode(int vv)
 {
 	val = vv;
+	parentIndex = -1;
 	childHead = 0;
 	childTail = 0;
 	next = 0;
@@ -16,7 +17,7 @@ TNode::TNode(int vv)
 
 void TNode::addChild(TNode * nn,long long int dd)
 {
-	
+
 	if (childHead == 0)
 	{
 		childHead = nn;
@@ -31,6 +32,19 @@ void TNode::addChild(TNode * nn,long long int dd)
 	childNum++;
 }
 
+void Tree::printResult()
+{
+	cout << lowPower << "\n";
+	for (int i = 0; i < stationNum; ++i)
+	{
+		if (lowTransSchedule[i] != 0)
+		{
+			TNode * nn = nodes[i];
+			cout << i + 1 << " " << lowTransSchedule[i] << " " << nn->parentIndex << "\n";
+		}
+	}
+}
+
 void TNode::print()
 {
 	cout << "Node:" << val << "Children:\n";
@@ -43,37 +57,36 @@ void TNode::print()
 	cout << "end Node:" << val << "\n";
 }
 
-Tree::Tree(long long int * rate, Station ** stations, int stationNum, int source)
+Tree::Tree(long long int * rate, Station ** stations, int sn, int source)
 {
 	//set root
 	//unmark all staitons
+	stationNum = sn;
 	
+	// keep track of schedule and parents
 	lowTransSchedule = new int[stationNum];
-	
+	parentIndexes = new int[stationNum];
+
 	nodes = new TNode*[stationNum];
-	
-	//TNode * root = new TNode(source);
 
 	bool * mark = new bool[stationNum];
-	
+
 	for (int i = 0; i < stationNum; ++i)
 	{
 		cout <<"treenode:" << stations[i]->getX() << "," << stations[i]->getY() << "rate: " << rate[i] << "\n";
 		nodes[i] = new TNode(i);
 		mark[i] = false;
 	}
-	//cout << "src:" << source << nodes[source];
 	TNode * root = nodes[source];
-	
+
 	PTQueue * queue = new PTQueue(stationNum);
-	
+
 	queue->push(root);
 	mark[source] = true;
-	
+
 	while (!queue->isEmpty())
 	{
 		TNode * i = queue->pop();
-		//PTQueue * l = new PTQueue(stationNum);
 		for (int j = 0; j < stationNum; ++j)
 		{
 			if (i->val == j)
@@ -83,28 +96,21 @@ Tree::Tree(long long int * rate, Station ** stations, int stationNum, int source
 			long long int dd = pow(stations[i->val]->getX() - stations[j]->getX(), 2) + pow(stations[i->val]->getY() - stations[j]->getY(), 2);
 			if (dd <= rate[i->val])
 			{
+				//cout << "added child" << j << "to" << i->val << "\n";
+				nodes[j]->parentIndex = i->val;
 				i->addChild(nodes[j], dd);
-				//l->push(nodes[j]);
 				mark[j] = true;
 				queue->push(nodes[j]);
 			}
-			
+
 		}
-		/*while (!l->isEmpty())
-		{
-			TNode * j = l->pop();
-			i->addChild(j, );
-			mark[j->val] = true;
-			queue->push(j);
-		}*/
-		
+
 	}
-	//cout << "suki" << root->val;
-	//root->print();
 
 	lowPower = 0;
 	for (int i = 0; i < stationNum; ++i)
 	{
+		parentIndexes[i] = nodes[i]->parentIndex;
 		TNode *nn = nodes[i];
 		TNode *cc = nn->childHead;
 		long long int pp = 0;
@@ -113,13 +119,14 @@ Tree::Tree(long long int * rate, Station ** stations, int stationNum, int source
 			pp = max(cc->distToParent, pp);
 			cc = cc->next;
 		}
-		cout << "added power " << i << ":" << pp << "\n";
+		//cout << "added power " << i << ":" << pp << "\n";
 		lowTransSchedule[i] = pp;
 		lowPower += pp;
 	}
-	
-	//cout << "power" << lowPower;
-	
+	//free mem
+	//cout << "lowt:" << lowPower << "\n";
+	delete mark;
+	delete queue;
 }
 
 
@@ -133,3 +140,34 @@ int * Tree::getLowTransSchedule()
 {
 	return lowTransSchedule;
 }
+
+int * Tree::getParents(int * markedIndex, int size)
+{
+	
+	int * nn = new int[size];
+	for (int i = 0; i < size; ++i)
+	{
+		nn[i] = 0;
+	}
+	for (int j = 0; j < stationNum; ++j)
+	{
+		int ind = markedIndex[j];
+		nn[ind] = markedIndex[parentIndexes[j]] + 1;
+	}
+	return nn;
+}
+
+Tree::~Tree()
+{
+
+	for (int i = 0; i < stationNum; ++i)
+	{
+		delete nodes[i];
+	}
+	delete nodes;
+	delete lowTransSchedule;
+	delete parentIndexes;
+	
+}
+
+

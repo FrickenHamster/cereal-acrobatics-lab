@@ -16,6 +16,7 @@ private:
 	int val;
 	bool mark;
 	int childNum;
+	int parentIndex;
 	
 	TNode *next;
 	TNode *childHead;
@@ -32,19 +33,23 @@ class Tree
 {
 public:
 	Tree(long long int *, Station **, int, int);
-	//virtual ~Tree();
+	virtual ~Tree();
 	int getLowestPower();
 	int * getLowTransSchedule();
+	void printResult();
+	int * getParents(int *, int);
 
 private:
 	TNode ** nodes;
+	int stationNum;
 	int lowPower;
 	int * lowTransSchedule;
+	int * parentIndexes;
 };
 
 #endif /* PTREE_H_ */
 
-
+/*
 class QueueNode
 {
 public:
@@ -55,7 +60,7 @@ public:
 private:
 	TNode * data;
 friend class PTQueue;
-};
+};*/
 
 class PTQueue
 {
@@ -70,10 +75,15 @@ public:
 	PTQueue(int ms)
 	{
 		maxSize = ms;
-		array = new TNode*[maxSize];
+		array = new TNode *[maxSize];
 		headIndex = 0;
 		tailIndex = 0;
 		size = 0;
+	}
+		
+	virtual ~PTQueue()
+	{
+		delete array;
 	}
 	
 	void push(TNode* node)

@@ -12,6 +12,7 @@ void ACSF(Station **stations, int num, int source)
 	long long int *rates = new long long int[num];
 	long long int *p = new long long int[num];
 	long long int *q = new long long int[num];
+	Tree * tt = 0;
 	//unmark stations
 
 	Station **markedStations = new Station *[num];
@@ -51,24 +52,6 @@ void ACSF(Station **stations, int num, int source)
 		markedNum++;
 		rates[lowid] = 0;
 		long long int lowp = -1;
-		/*for (int j = 0; j < num; ++j)
-		{
-			if (!mark[j] || j == lowid)
-				continue;
-			for (int k = 0; k < num; ++k)
-			{
-				q[k] = rates[k];
-			}
-			int dd = pow(stations[j]->getX() - stations[lowid]->getX(), 2) + pow(stations[j]->getY() - stations[lowid]->getY(), 2);
-			q[j] = max(q[j], (long long int) dd);
-			
-			Tree *tt = new Tree(q, markedStations, markedNum, 0);
-			p[j] = tt->getLowestPower();
-			if (lowp == -1 || p[j] < lowp)
-			{
-				lowp = p[j];
-			}
-		}*/
 		for (int l = 0; l < markedNum; ++l)
 		{
 			int ind = markedIndex[l];
@@ -81,38 +64,19 @@ void ACSF(Station **stations, int num, int source)
 			}
 			int dd = pow(stations[ind]->getX() - stations[lowid]->getX(), 2) + pow(stations[ind]->getY() - stations[lowid]->getY(), 2);
 			q[l] = max(q[l], (long long int) dd);
-			cout << "jess" << "\n";
-			Tree *tt = new Tree(q, markedStations, markedNum, 0);
-			cout << "lin" << "\n";
+			tt = new Tree(q, markedStations, markedNum, 0);
+			delete tt;
+			
 			p[ind] = tt->getLowestPower();
-			cout << "set p" << l << "to " << tt->getLowestPower();
-			for (int j = 0; j < markedNum; ++j)
-			{
-				cout << "p" << j << ":" << p[j] << "\n";
-			}
 			
 			if (lowp == -1 || p[ind] < lowp)
 				lowp = p[ind];
 		}
-		/*for (int l = 0; l < num; ++l)
-		{
-			if (!mark[l] || l == lowid)
-				continue;
-			for (int k = 0; k < num; ++k)
-			{
-				q[k] = rates[k];
-			}
-			int dd = pow(stations[l]->getX() - stations[lowid]->getX(), 2) + pow(stations[l]->getY() - stations[lowid]->getY(), 2);
-			q[l] = max(q[l], (long long int) dd);
-			Tree *tt = new Tree(q, stations, num, source);
-			p[l] = tt->getLowestPower();
-		}*/
 		for (int l = 0; l < num; ++l)
 		{
 			if (l == lowid || !mark[l] || p[l] > lowp)
 				continue;
 			long long int dd = pow(stations[l]->getX() - stations[lowid]->getX(), 2) + pow(stations[l]->getY() - stations[lowid]->getY(), 2);
-			cout << "up p";
 			rates[l] = max(rates[l], dd);
 			break;
 		}
@@ -121,7 +85,7 @@ void ACSF(Station **stations, int num, int source)
 			int qind = markedIndex[m];
 			q[m] = rates[qind];
 		}
-		Tree *tt = new Tree(q, markedStations, markedNum, 0);
+		tt = new Tree(q, markedStations, markedNum, 0);
 		for (int l = 0; l < markedNum; ++l)
 		{
 			int ind = markedIndex[l];
@@ -130,10 +94,18 @@ void ACSF(Station **stations, int num, int source)
 		}
 	}
 
+//	tt->printResult();
+
+	cout << tt->getLowestPower() << "\n";
+	int * pp = tt->getParents(markedIndex, markedNum);
 	for (int i = 0; i < num; ++i)
 	{
-		cout << i << "," << rates[i] << "\n";
+		if (rates[i] != 0)
+		{
+			cout << i + 1 << " " << rates[i] << " " << pp[i] << "\n";
+		}
 	}
+	delete tt;
 }
 
 
@@ -193,7 +165,6 @@ void ACSet(Station **stations, int num, int source)
 		markedStations[markedNum] = stations[lowj];
 		markedIndex[markedNum] = lowj;
 		markedNum++;
-	
 		
 		int lowp = -1;
 
@@ -278,9 +249,216 @@ void ACSet(Station **stations, int num, int source)
 	}
 }
 
+void ACF(Station ** stations, int num, int source)
+{
+	bool * mark = new bool[num];
+	long long int * rates = new long long int[num];
+
+	Station **markedStations = new Station *[num];
+	int markedNum = 0;
+	int *markedIndex = new int[num];
+	
+	long long int lowp = -1;
+	int lowpj = -1;
+	int lowpl = -1;
+
+	long long int *q = new long long int[markedNum];
+	long long int *p = new long long int[markedNum];
+	
+	Tree *tt = 0;
+	
+	for (int i = 0; i < num; ++i)
+	{
+		mark[i] = false;
+		rates[i] = 0;
+	}
+	
+	mark[source] = true;
+	markedIndex[markedNum] = source;
+	markedStations[markedNum] = stations[source];
+	markedNum++;
+
+	for (int i = 1; i < num; ++i)
+	{
+		lowp = -1;
+		lowpj = -1;
+		lowpl = -1;
+		for (int j = 0; j < num; ++j)
+		{
+			p[j] = 0;
+			q[j] = 0;
+		}
+		for (int j = 0; j < num; ++j)
+		{
+			if (mark[j])
+				continue;
+			for (int m = 0; m < markedNum; ++m)
+			{
+				//cout << "marked" << markedIndex[m] << "\n";
+			}
+			mark[j] = true;
+			markedIndex[markedNum] = j;
+			markedStations[markedNum] = stations[j];
+			markedNum++;
+			rates[j] = 0;
+			
+			for (int l = 0; l < markedNum; ++l)
+			{
+				int lind = markedIndex[l];
+				if (lind == j)
+					continue;
+				for (int y = 0; y < num; ++y)
+				{
+					p[y] = 0;
+					q[y] = 0;
+				}
+				for (int k = 0; k < markedNum; ++k)
+				{
+					q[k] = rates[markedIndex[k]];
+				}
+				long long int dd = pow(stations[lind]->getX() - stations[j]->getX(), 2) + pow(stations[lind]->getY() - stations[j]->getY(), 2);
+				q[l] = max(q[l], dd);
+				//cout << "tree " << j << "," << markedIndex[l] << "lind:" << lind << "\n";
+				tt = new Tree(q, markedStations, markedNum, 0);
+				long long int pp = (long long int)tt->getLowestPower();
+				if (lowp == -1 || pp < lowp)
+				{
+					
+					lowpj = j;
+					lowpl = lind;
+					lowp = pp;
+				}
+			}
+			//unmark j
+			mark[j] = false;
+			/*for (int l = j; l < markedNum - 1; ++l)
+			{
+				markedStations[l] = markedStations[l + 1];
+				markedIndex[l] = markedIndex[l + 1];
+			}*/
+			markedNum--;
+			
+		}
+
+		mark[lowpj] = true;
+		markedStations[markedNum] = stations[lowpj];
+		markedIndex[markedNum] = lowpj;
+		markedNum++;
+		
+		long long int dd = pow(stations[lowpl]->getX() - stations[lowpj]->getX(), 2) + pow(stations[lowpl]->getY() - stations[lowpj]->getY(), 2);
+		rates[lowpl] = max(rates[lowpl], dd);
+		for (int m = 0; m < markedNum; ++m)
+		{
+			p[m] = rates[markedIndex[m]];
+		}
+		tt = new Tree(p, markedStations, markedNum, 0);
+		for (int l = 0; l < markedNum; ++l)
+		{
+			int ind = markedIndex[l];
+			rates[ind] = tt->getLowTransSchedule()[l];
+		}
+	}
+	cout << tt->getLowestPower() << "\n";
+	int * pp = tt->getParents(markedIndex, markedNum);
+	for (int i = 0; i < num; ++i)
+	{
+		if (rates[i] != 0)
+		{
+			cout << i + 1 << " " << rates[i] << " " << pp[i] << "\n";
+		}
+	}
+	/*for (int i = 0; i < num; ++i)
+	{
+		cout << i << "," << rates[i] << "\n";
+	}*/
+}
+
+
+
+long long int * mergeSort(long long int * array, int start, int end)
+{
+	if (start == end)
+	{
+		long long int * rr = new long long int[1];
+		rr[0] = array[start];
+		cout << "base:" << start << ":" << rr[0] << "\n";
+		return rr;
+	}
+	int size = end - start + 1;
+	int mid = start + floor((end - start) / 2);
+	int li = 0;
+	int ri = 0;
+	int ls = mid - start + 1;
+	int rs = end - mid;
+	cout << start << "," << end << "," << mid << "\n";
+	long long int * left = mergeSort(array, start, mid);
+	long long int * right = mergeSort(array, mid + 1, end);
+	
+	long long int * rr = new long long int[size];
+	//return rr;
+	int jes = 0;
+	cout << "rs " << rs << "ls" << ls << "\n";
+	while (li < ls || ri < rs)
+	{
+		if (li > ls || ri > rs)
+		{
+			cout << "fail" << rs << "," << ls << "\n";
+			return rr;
+		}
+		if (ri == rs || left[li] <= right[ri])
+		{
+			cout << "left less" << "\n";
+			rr[jes] = left[li];
+			li++;
+			jes++;
+		}
+		//else
+		if (li == ls || left[li] > right[ri])
+		{
+			cout << "right less" << "\n";
+			rr[jes] = right[ri];
+			ri++;
+			jes++;
+		}
+	}
+	delete left;
+	delete right;
+	return rr;
+}
+
+void DC(Station ** stations, int num, int source)
+{
+
+	long long int * dists = new long long int[num];
+	for (int i = 0; i < num; ++i)
+	{
+		long long int dd = pow(stations[source]->getX() - stations[i]->getX(), 2) + pow(stations[source]->getY() - stations[i]->getY(), 2);
+		dists[i] = dd;
+		cout << dd << "\n";
+	}
+	long long int * sort = mergeSort(dists, 0, num - 1);
+	for (int i = 0; i < num; ++i)
+	{
+		cout << sort[i] << "\n";
+	}
+}
+
 
 int main(int argc, char **argv)
 {
+	long long int * test = new long long int[4];
+	test[0] = 3;
+	test[1] = 32;
+	test[2] = 1;
+	test[3] = 7;
+	long long int * rr = mergeSort(test, 0, 4);
+	for (int j = 0; j < 4; ++j)
+	{
+		cout << rr[j] << "\n";
+	}
+	return 0;
+	
+	
 	int method, stationNum, sourceStation;
 
 
@@ -309,6 +487,14 @@ int main(int argc, char **argv)
 		case 2:
 			ACSet(stations, stationNum, sourceStation);
 			
+			break;
+			
+		case 3:
+			ACF(stations, stationNum, sourceStation);
+			break;
+			
+		case 4:
+			DC(stations, stationNum, sourceStation);
 			break;
 	}
 	
