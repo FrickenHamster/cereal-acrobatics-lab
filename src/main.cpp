@@ -244,11 +244,17 @@ void ACSet(Station **stations, int num, int source)
 		int lind = markedIndex[lowl];
 		cout << "low l " << lind <<"\n";
 		
-		long long int dd = pow(stations[lind]->getX() - stations[lowj]->getX(), 2) + pow(stations[lind]->getY() - stations[lind]->getY(), 2);
+		long long int dd = pow(stations[lind]->getX() - stations[lowj]->getX(), 2) + pow(stations[lind]->getY() - stations[lowj]->getY(), 2);
+		cout << "dd:" << dd << "\n";
 		rates[lind] = max(rates[lind], dd);
 		for (int m = 0; m < num; ++m)
 		{
 			cout << "rate is:" << rates[m] << "\n";
+		}
+
+		for (int l = 0; l < markedNum; ++l)
+		{
+			q[l] = rates[markedIndex[l]];
 		}
 		
 		Tree *tt = new Tree(q, markedStations, markedNum, 0);
@@ -259,8 +265,11 @@ void ACSet(Station **stations, int num, int source)
 			cout << "setting " << ind << " to " << tt->getLowTransSchedule()[l] << "\n";
 			rates[ind] = tt->getLowTransSchedule()[l];
 		}
-		
 		totalPower = tt->getLowestPower();
+		for (int n = 0; n < num; ++n)
+		{
+			cout << "end iter rate" << n << ":" << rates[n] << "\n";
+		}
 	}
 	cout << totalPower << "\n";
 	for (int i = 0; i < num; ++i)

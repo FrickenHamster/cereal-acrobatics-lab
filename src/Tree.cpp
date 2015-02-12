@@ -74,7 +74,6 @@ Tree::Tree(long long int * rate, Station ** stations, int stationNum, int source
 	{
 		TNode * i = queue->pop();
 		//PTQueue * l = new PTQueue(stationNum);
-		cout <<"cc";
 		for (int j = 0; j < stationNum; ++j)
 		{
 			if (i->val == j)
@@ -88,7 +87,6 @@ Tree::Tree(long long int * rate, Station ** stations, int stationNum, int source
 				//l->push(nodes[j]);
 				mark[j] = true;
 				queue->push(nodes[j]);
-				cout<<"ass";
 			}
 			
 		}
@@ -102,7 +100,7 @@ Tree::Tree(long long int * rate, Station ** stations, int stationNum, int source
 		
 	}
 	//cout << "suki" << root->val;
-	root->print();
+	//root->print();
 
 	lowPower = 0;
 	for (int i = 0; i < stationNum; ++i)
@@ -115,7 +113,7 @@ Tree::Tree(long long int * rate, Station ** stations, int stationNum, int source
 			pp = max(cc->distToParent, pp);
 			cc = cc->next;
 		}
-		//cout << "added power " << i << ":" << pp << "\n";
+		cout << "added power " << i << ":" << pp << "\n";
 		lowTransSchedule[i] = pp;
 		lowPower += pp;
 	}
