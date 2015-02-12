@@ -381,7 +381,6 @@ long long int * mergeSort(long long int * array, int start, int end)
 	{
 		long long int * rr = new long long int[1];
 		rr[0] = array[start];
-		cout << "base:" << start << ":" << rr[0] << "\n";
 		return rr;
 	}
 	int size = end - start + 1;
@@ -390,32 +389,40 @@ long long int * mergeSort(long long int * array, int start, int end)
 	int ri = 0;
 	int ls = mid - start + 1;
 	int rs = end - mid;
-	cout << start << "," << end << "," << mid << "\n";
 	long long int * left = mergeSort(array, start, mid);
 	long long int * right = mergeSort(array, mid + 1, end);
 	
 	long long int * rr = new long long int[size];
 	//return rr;
 	int jes = 0;
-	cout << "rs " << rs << "ls" << ls << "\n";
+	//cout << "rs " << rs << "ls" << ls << "\n";
 	while (li < ls || ri < rs)
 	{
 		if (li > ls || ri > rs)
 		{
-			cout << "fail" << rs << "," << ls << "\n";
+			//cout << "fail" << rs << "," << ls << "\n";
 			return rr;
 		}
-		if (ri == rs || left[li] <= right[ri])
+		if (ri == rs)
 		{
-			cout << "left less" << "\n";
 			rr[jes] = left[li];
 			li++;
 			jes++;
 		}
-		//else
-		if (li == ls || left[li] > right[ri])
+		else if (li == ls)
 		{
-			cout << "right less" << "\n";
+			rr[jes] = right[ri];
+			ri++;
+			jes++;
+		}
+		else if (left[li] <= right[ri])
+		{
+			rr[jes] = left[li];
+			li++;
+			jes++;
+		}
+		else
+		{
 			rr[jes] = right[ri];
 			ri++;
 			jes++;
@@ -446,18 +453,19 @@ void DC(Station ** stations, int num, int source)
 
 int main(int argc, char **argv)
 {
-	long long int * test = new long long int[4];
+	/*long long int * test = new long long int[5];
 	test[0] = 3;
 	test[1] = 32;
 	test[2] = 1;
 	test[3] = 7;
+	test[4] = 6;
 	long long int * rr = mergeSort(test, 0, 4);
-	for (int j = 0; j < 4; ++j)
+	for (int j = 0; j < 5; ++j)
 	{
 		cout << rr[j] << "\n";
 	}
 	return 0;
-	
+	*/
 	
 	int method, stationNum, sourceStation;
 
