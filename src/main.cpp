@@ -590,6 +590,8 @@ Tree * DCACF(Station **stations, int mmn, long long int * rates, int num, int so
 			int ind = markedIndex[l];
 			rates[ind] = tt->getLowTransSchedule()[l];
 		}
+		
+		
 
 		if (i <= num - 1)
 			delete tt;
