@@ -38,7 +38,7 @@ public:
 	int * getLowTransSchedule();
 	void printResult();
 	int * getParents(int *, int);
-
+	int * getParentsClean();
 private:
 	TNode ** nodes;
 	int stationNum;

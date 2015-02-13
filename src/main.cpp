@@ -10,7 +10,6 @@ using namespace std;
 void ACSF(Station **stations, int num, int source)
 {
 	long long int *rates = new long long int[num];
-	long long int *p = new long long int[num];
 	long long int *q = new long long int[num];
 	Tree *tt = 0;
 	//unmark stations
@@ -46,74 +45,61 @@ void ACSF(Station **stations, int num, int source)
 				lowd = dd;
 			}
 		}
-		cout << "adding " << lowid << "\n";
 		mark[lowid] = true;
 		markedStations[markedNum] = stations[lowid];
 		markedIndex[markedNum] = lowid;
 		markedNum++;
 		rates[lowid] = 0;
 		long long int lowp = -1;
-		for (int l = 0; l < markedNum; ++l)
-		{
-			int ind = markedIndex[l];
-			if (ind == lowid)
-				continue;
-			cout << "testing " << ind << "\n";
-			for (int k = 0; k < markedNum; ++k)
-			{
-				int qind = markedIndex[k];
-				q[k] = rates[qind];
-			}
-			long long int dd = pow(stations[ind]->getX() - stations[lowid]->getX(), 2) + pow(stations[ind]->getY() - stations[lowid]->getY(), 2);
-			q[l] = max(q[l], dd);
-
-			for (int j = 0; j < markedNum; ++j)
-			{
-				cout << "q:" << q[j] << "\n";
-			}
-			
-			tt = new Tree(q, markedStations, markedNum, 0);
-			delete tt;
-
-			p[ind] = tt->getLowestPower();
-			cout << "lowpower" << p[ind] << "\n";
-
-			if (lowp == -1 || p[ind] < lowp)
-			{
-				cout << "lowest" << "\n";
-				lowp = p[ind];
-			}
-		}
-		cout << "lowp" << lowp << "\n";
+		int lowpid = - 1;
 		for (int l = 0; l < num; ++l)
 		{
-			if (l == lowid || !mark[l] || p[l] > lowp)
+			//int ind = markedIndex[l];
+			if (!mark[l] || l == lowid)
 				continue;
+			for (int k = 0; k < num; ++k)
+			{
+				//int qind = markedIndex[k];
+				q[k] = rates[k];
+			}
 			long long int dd = pow(stations[l]->getX() - stations[lowid]->getX(), 2) + pow(stations[l]->getY() - stations[lowid]->getY(), 2);
-			rates[l] = max(rates[l], dd);
-			break;
-		}
-		for (int m = 0; m < markedNum; ++m)
-		{
-			int qind = markedIndex[m];
-			q[m] = rates[qind];
-		}
-		tt = new Tree(q, markedStations, markedNum, 0);
-		for (int l = 0; l < markedNum; ++l)
-		{
-			int ind = markedIndex[l];
+			q[l] = max(q[l], dd);
 
-			rates[ind] = tt->getLowTransSchedule()[l];
+			
+			tt = new Tree(q, stations, num, 0);
+			delete tt;
+
+			long long int pp = tt->getLowestPower();
+
+			if (lowp == -1 || pp < lowp)
+			{
+				lowp = pp;
+				lowpid = l;
+			}
 		}
-		if (i <= num - 1)
+
+		long long int dd = pow(stations[lowpid]->getX() - stations[lowid]->getX(), 2) + pow(stations[lowpid]->getY() - stations[lowid]->getY(), 2);
+		rates[lowpid] = max(rates[lowpid], dd);
+
+		for (int m = 0; m < num; ++m)
+		{
+			//int qind = markedIndex[m];
+			q[m] = rates[m];
+		}
+		tt = new Tree(q, stations, num, 0);
+		for (int l = 0; l < num; ++l)
+		{
+			//int ind = markedIndex[l];
+
+			rates[l] = tt->getLowTransSchedule()[l];
+		}
+		if (i < num - 1)
 			delete tt;
 			
 	}
 
-//	tt->printResult();
-
 	cout << tt->getLowestPower() << "\n";
-	int *pp = tt->getParents(markedIndex, markedNum);
+	int *pp = tt->getParentsClean();
 	for (int i = 0; i < num; ++i)
 	{
 		if (rates[i] != 0)
@@ -188,53 +174,38 @@ void ACSet(Station **stations, int num, int source)
 		markedNum++;
 
 		int lowp = -1;
+		int lowpid = -1;
 
-		for (int l = 0; l < markedNum; ++l)
+		for (int l = 0; l < num; ++l)
 		{
-			int lind = markedIndex[l];
-			if (lind == lowj)
+			if (!mark[l] || l == lowj)
 				continue;
-			cout << "going lind:" << lind << "\n";
-			for (int k = 0; k < markedNum; ++k)
+			for (int k = 0; k < num; ++k)
 			{
-				cout << "q[" << k << "] is" << rates[markedIndex[k]] << "\n";
-				q[k] = rates[markedIndex[k]];
+				q[k] = rates[k];
 			}
 
-			long long int dd = pow(stations[lind]->getX() - stations[lowj]->getX(), 2) + pow(stations[lind]->getY() - stations[lowj]->getY(), 2);
+			long long int dd = pow(stations[l]->getX() - stations[lowj]->getX(), 2) + pow(stations[l]->getY() - stations[lowj]->getY(), 2);
 			q[l] = max(q[l], dd);
 			cout << "jess" << "\n";
-			tt = new Tree(q, markedStations, markedNum, 0);
-			p[lind] = tt->getLowestPower();
-			cout << "set p" << l << "to " << tt->getLowestPower() << "\n";
-			for (int j = 0; j < num; ++j)
+			tt = new Tree(q, stations, num, 0);
+			long long int pp = tt->getLowestPower();
+			cout << "set p" << l << "to " << pp << "\n";
+
+			if (lowp == -1 || pp < lowp)
 			{
-				cout << "p" << j << ":" << p[j] << "\n";
-			}
-
-			if (lowp == -1 || p[lind] < lowp)
-				lowp = p[lind];
-		}
-
-		cout << "lowp" << lowp << "\n";
-
-		int lowl = -1;
-		for (int l = 0; l < markedNum; ++l)
-		{
-			//if (l == lowj)
-			//	continue;
-			cout << "searching " << p[markedIndex[l]] << "\n";
-			if (p[markedIndex[l]] == lowp)
-			{
-				lowl = l;
-				break;
+				cout << "set low to" << pp;
+				lowp = pp;
+				lowpid = l;
 			}
 		}
 
-		cout << "lowl" << lowl << "\n";
+		cout << "lowp" << lowp << "id" << lowpid << "\n";
 
-		int lind = markedIndex[lowl];
-		cout << "low l " << lind << "\n";
+		int lowl = lowpid;
+
+
+		int lind = lowl;
 
 		long long int dd = pow(stations[lind]->getX() - stations[lowj]->getX(), 2) + pow(stations[lind]->getY() - stations[lowj]->getY(), 2);
 		cout << "dd:" << dd << "\n";
@@ -244,29 +215,23 @@ void ACSet(Station **stations, int num, int source)
 			cout << "rate is:" << rates[m] << "\n";
 		}
 
-		for (int l = 0; l < markedNum; ++l)
+		for (int l = 0; l < num; ++l)
 		{
-			q[l] = rates[markedIndex[l]];
+			q[l] = rates[l];
 		}
 
-		tt = new Tree(q, markedStations, markedNum, 0);
+		tt = new Tree(rates, stations, num, 0);
 
-		for (int l = 0; l < markedNum; ++l)
+		for (int l = 0; l < num; ++l)
 		{
-			int ind = markedIndex[l];
-			cout << "setting " << ind << " to " << tt->getLowTransSchedule()[l] << "\n";
-			rates[ind] = tt->getLowTransSchedule()[l];
+			rates[l] = tt->getLowTransSchedule()[l];
 		}
 		totalPower = tt->getLowestPower();
-		for (int n = 0; n < num; ++n)
-		{
-			cout << "end iter rate" << n << ":" << rates[n] << "\n";
-		}
-		if (i <= num - 1)
+		if (i < num - 1)
 			delete tt;
 	}
 	cout << tt->getLowestPower() << "\n";
-	int *pp = tt->getParents(markedIndex, markedNum);
+	int *pp = tt->getParentsClean();
 	for (int i = 0; i < num; ++i)
 	{
 		if (rates[i] != 0)
@@ -277,6 +242,7 @@ void ACSet(Station **stations, int num, int source)
 				cout << i + 1 << " " << rates[i] << " " << pp[i] + 1 << "\n";
 		}
 	}
+	delete tt;
 }
 
 void ACF(Station **stations, int num, int source)
@@ -387,6 +353,8 @@ void ACF(Station **stations, int num, int source)
 			int ind = markedIndex[l];
 			rates[ind] = tt->getLowTransSchedule()[l];
 		}
+		if (i < num - 1)
+			delete tt;
 	}
 	cout << tt->getLowestPower() << "\n";
 	int *pp = tt->getParents(markedIndex, markedNum);

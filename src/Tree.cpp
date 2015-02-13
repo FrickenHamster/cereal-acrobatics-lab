@@ -162,6 +162,11 @@ int * Tree::getParents(int * markedIndex, int size)
 	return nn;
 }
 
+int * Tree::getParentsClean()
+{
+	return parentIndexes;
+}
+
 Tree::~Tree()
 {
 
