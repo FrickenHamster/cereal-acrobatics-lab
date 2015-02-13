@@ -106,7 +106,7 @@ Tree::Tree(long long int * rate, Station ** stations, int sn, int source)
 		}
 
 	}
-
+	
 	lowPower = 0;
 	for (int i = 0; i < stationNum; ++i)
 	{
@@ -152,7 +152,12 @@ int * Tree::getParents(int * markedIndex, int size)
 	for (int j = 0; j < stationNum; ++j)
 	{
 		int ind = markedIndex[j];
-		nn[ind] = markedIndex[parentIndexes[j]] + 1;
+		if (parentIndexes[j] == -1)
+		{
+			nn[ind] = -1;
+		}
+		else
+		nn[ind] = markedIndex[parentIndexes[j]];
 	}
 	return nn;
 }
